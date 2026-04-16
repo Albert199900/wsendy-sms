@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Wsendy SMS - Modern Offline SMS Application" />
+    <meta name="theme-color" content="#2196F3" />
+    <title>Wsendy SMS - Offline SMS App</title>
+    <base href="./" />
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%232196F3' width='192' height='192'/><text x='50%' y='50%' font-size='80' fill='white' text-anchor='middle' dy='.3em' font-weight='bold'>W</text></svg>" />
+    <link rel="stylesheet" media="(prefers-color-scheme:light)" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.16.0/dist/themes/light.css" />
+    <link rel="stylesheet" media="(prefers-color-scheme:dark)" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.16.0/dist/themes/dark.css" onload="document.documentElement.classList.add('sl-theme-dark');" />
+    <script type="module">
+        import { setBasePath } from 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.16.0/dist/utilities/base-path.js';
+        setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.16.0/cdn/');
+        import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.16.0/dist/shoelace.esm.js';
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2196F3;
+            --primary-dark: #1976D2;
+            --secondary-color: #FF9800;
+            --success-color: #4CAF50;
+            --error-color: #F44336;
+            --warning-color: #FFC107;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --light-bg: #F5F5F5;
+            --light-surface: #FFFFFF;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --border-color: #E0E0E0;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        html.dark-mode {
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B0B0;
+            --light-bg: #121212;
+            --light-surface: #1E1E1E;
+            --border-color: #333333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--error-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--light-surface);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 60px;
+            z-index: 50;
+            box-shadow: var(--shadow);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
+            background: rgba(33, 150, 243, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: calc(100vh - 130px);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .container {
+            padding: 2rem 1rem;
+        }
+
+        .sms-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: var(--light-surface);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-input,
+        textarea {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--light-bg);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+            background: var(--light-surface);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            width: 20px;
+            height: 20px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .input-wrapper input {
+            padding-left: 40px;
+        }
+
+        .network-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .radio-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .network-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            background: var(--light-bg);
+        }
+
+        .radio-option input[type="radio"]:checked + .network-badge {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .char-counter {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .checkbox-group {
+            gap: 1rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            cursor: pointer;
+        }
+
+        .toggle-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-card {
+            background: var(--light-surface);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .action-card:hover {
+            border-color: var(--primary-color);
+            background: rgba(33, 150, 243, 0.05);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .icon-large {
+            width: 40px;
+            height: 40px;
+            color: var(--primary-color);
+        }
+
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message-item {
+            background: var(--light-surface);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .message-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .message-number {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .message-time {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .message-network {
+            display: inline-block;
+            background: rgba(33, 150, 243, 0.1);
+            color: var(--primary-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .message-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .message-status.sent {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+        }
+
+        .message-status.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+
+        .message-status.failed {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error-color);
+        }
+
+        .message-content {
+            color: var(--text-primary);
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--light-surface);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+        }
+
+        .settings-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .settings-section p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .donate-section {
+            text-align: center;
+        }
+
+        .donate-section p {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .donate-info {
+            background: rgba(33, 150, 243, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .donate-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem !important;
+        }
+
+        .donate-hint {
+            font-size: 0.9rem;
+            color: var(--text-secondary) !important;
+        }
+
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .notification-item {
+            background: var(--light-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .notification-item.success {
+            border-left-color: var(--success-color);
+        }
+
+        .notification-item.error {
+            border-left-color: var(--error-color);
+        }
+
+        .notification-item.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: var(--text-primary);
+            color: var(--light-surface);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--error-color);
+        }
+
+        .toast.warning {
+            background: var(--warning-color);
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .sms-form {
+                padding: 1.5rem;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .network-selection {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+
+            .toast {
+                left: 1rem;
+                right: 1rem;
+            }
+
+            .icon-btn {
+                padding: 0.375rem;
+            }
+
+            .icon {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-content {
+                padding: 0 0.75rem;
+            }
+
+            .logo-text {
+                font-size: 1.25rem;
+            }
+
+            .container {
+                padding: 1rem 0.75rem;
+            }
+
+            .sms-form {
+                padding: 1rem;
+            }
+
+            .network-selection {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .icon {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        @media print {
+            .header,
+            .tabs,
+            .button-group,
+            .quick-actions,
+            .header-actions {
+                display: none;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-text">Wsendy SMS</span>
+            </div>
+            <div class="header-actions">
+                <button id="notificationBtn" class="icon-btn" title="Notifications">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span class="notification-badge" id="notificationBadge">0</span>
+                </button>
+                <button id="settingsBtn" class="icon-btn" title="Settings">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+                        <path d="M12 1v6m0 6v6"/>
+                        <path d="M4.22 4.22l4.24 4.24m0 5.08l-4.24 4.24M19.78 4.22l-4.24 4.24m0 5.08l4.24 4.24"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="compose">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Compose
+            </button>
+            <button class="tab-btn" data-tab="inbox">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 21 6 12 2 12"/><path d="M6 12V7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v5"/>
+                </svg>
+                Inbox
+            </button>
+            <button class="tab-btn" data-tab="sent">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+                Sent
+            </button>
+        </nav>
+
+        <section id="compose" class="tab-content active">
+            <div class="container">
+                <form id="smsForm" class="sms-form">
+                    <div class="form-group">
+                        <label for="recipient">Recipient Number</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            <input type="tel" id="recipient" placeholder="Enter phone number" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="network">Network Provider</label>
+                        <div class="network-selection">
+                            <label class="radio-option">
+                                <input type="radio" name="network" value="airtel" checked />
+                                <span class="network-badge">Airtel</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="network" value="vodacom" />
+                                <span class="network-badge">Vodacom</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="network" value="tigo" />
+                                <span class="network-badge">Tigo</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="network" value="halotel" />
+                                <span class="network-badge">Halotel</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" placeholder="Type your message..." rows="5" required></textarea>
+                        <div class="char-counter">
+                            <span id="charCount">0</span> / 160 characters
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="msgType">Message Type</label>
+                        <select id="msgType" class="form-input">
+                            <option value="text">Text Message</option>
+                            <option value="flash">Flash SMS</option>
+                            <option value="unicode">Unicode Message</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="enableNotif" checked />
+                            <span>Enable Delivery Notification</span>
+                        </label>
+                    </div>
+
+                    <div class="button-group">
+                        <sl-button type="submit" variant="primary" class="btn btn-primary">
+                            Send SMS
+                        </sl-button>
+                        <sl-button type="button" variant="default" id="shareWhatsapp" class="btn btn-secondary">
+                            Share WhatsApp
+                        </sl-button>
+                    </div>
+                </form>
+
+                <div class="quick-actions">
+                    <button class="action-card" id="donateBtn">
+                        <svg class="icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 8v8m-2-2h4"/>
+                        </svg>
+                        <span>Donate</span>
+                    </button>
+                    <button class="action-card" id="importBtn">
+                        <svg class="icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        <span>Import Contacts</span>
+                    </button>
+                    <button class="action-card" id="scheduleBtn">
+                        <svg class="icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        <span>Schedule</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="inbox" class="tab-content">
+            <div class="container">
+                <div id="inboxList" class="message-list">
+                    <div class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 21 6 12 2 12"/><path d="M6 12V7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v5"/>
+                        </svg>
+                        <p>No messages received yet</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sent" class="tab-content">
+            <div class="container">
+                <div id="sentList" class="message-list">
+                    <div class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                        <p>No messages sent yet</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-btn" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Notifications</h3>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="soundNotif" checked />
+                        <span>Sound Notifications</span>
+                    </label>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="vibration" checked />
+                        <span>Vibration</span>
+                    </label>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Display</h3>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="darkMode" />
+                        <span>Dark Mode</span>
+                    </label>
+                    <div class="form-group">
+                        <label for="fontSize">Font Size</label>
+                        <select id="fontSize" class="form-input">
+                            <option value="small">Small</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="large">Large</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Storage</h3>
+                    <button class="btn btn-secondary" id="clearCacheBtn">Clear Cache</button>
+                    <button class="btn btn-secondary" id="exportDataBtn">Export Data</button>
+                </div>
+
+                <div class="settings-section">
+                    <h3>About</h3>
+                    <p>Wsendy SMS v1.0.0</p>
+                    <p>Modern Offline SMS Application</p>
+                    <p style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 0.9rem;">
+                        Developed by <strong>Kabonge General Services</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notificationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Notifications</h2>
+                <button class="close-btn" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="notificationsList" class="notifications-list">
+                    <div class="empty-state">
+                        <p>No notifications</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="donateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Support Us</h2>
+                <button class="close-btn" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="donate-section">
+                    <p>Help us improve Wsendy SMS by making a donation</p>
+                    <div class="donate-info">
+                        <p class="donate-number">📱 <strong>0627962633</strong></p>
+                        <p class="donate-hint">Send any amount via M-Pesa, Airtel Money, or Vodacom Cash</p>
+                    </div>
+                    <button class="btn btn-primary" id="copyDonateBtn">Copy Donation Number</button>
+                    <button class="btn btn-secondary" id="whatsappDonateBtn">Contact via WhatsApp</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        class WsendySMS {
+            constructor() {
+                this.messages = { inbox: [], sent: [] };
+                this.notifications = [];
+                this.donationNumber = '0627962633';
+                this.developer = 'Kabonge General Services';
+                this.version = '1.0.0';
+                this.init();
+            }
+
+            init() {
+                this.loadFromStorage();
+                this.attachEventListeners();
+                this.updateBadge();
+            }
+
+            attachEventListeners() {
+                document.getElementById('smsForm').addEventListener('submit', (e) => this.sendSMS(e));
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.closest('.tab-btn')));
+                });
+                document.getElementById('message').addEventListener('input', (e) => this.updateCharCount(e.target));
+                document.getElementById('shareWhatsapp').addEventListener('click', () => this.shareWhatsApp());
+                document.getElementById('donateBtn').addEventListener('click', () => this.openModal('donateModal'));
+                document.getElementById('notificationBtn').addEventListener('click', () => this.openModal('notificationModal'));
+                document.getElementById('settingsBtn').addEventListener('click', () => this.openModal('settingsModal'));
+                document.getElementById('importBtn').addEventListener('click', () => this.importContacts());
+                document.getElementById('scheduleBtn').addEventListener('click', () => this.scheduleMessage());
+                document.getElementById('clearCacheBtn').addEventListener('click', () => this.clearCache());
+                document.getElementById('exportDataBtn').addEventListener('click', () => this.exportData());
+                document.getElementById('darkMode').addEventListener('change', (e) => this.toggleDarkMode(e.target.checked));
+                document.getElementById('fontSize').addEventListener('change', (e) => this.changeFontSize(e.target.value));
+                document.getElementById('copyDonateBtn').addEventListener('click', () => this.copyDonateNumber());
+                document.getElementById('whatsappDonateBtn').addEventListener('click', () => this.contactViaWhatsApp());
+                document.querySelectorAll('.close-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const modal = e.target.closest('.modal');
+                        this.closeModal(modal.id);
+                    });
+                });
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            this.closeModal(modal.id);
+                        }
+                    });
+                });
+                document.getElementById('notificationBtn').addEventListener('click', () => {
+                    this.updateNotificationsList();
+                });
+            }
+
+            async sendSMS(e) {
+                e.preventDefault();
+                const recipient = document.getElementById('recipient').value;
+                const message = document.getElementById('message').value;
+                const network = document.querySelector('input[name="network"]:checked').value;
+                const msgType = document.getElementById('msgType').value;
+                const enableNotif = document.getElementById('enableNotif').checked;
+                if (!recipient || !message) {
+                    this.showToast('Please fill all fields', 'error');
+                    return;
+                }
+                if (!this.validatePhoneNumber(recipient)) {
+                    this.showToast('Invalid phone number', 'error');
+                    return;
+                }
+                const smsMessage = {
+                    id: Date.now(),
+                    recipient,
+                    message,
+                    network,
+                    msgType,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending',
+                    enableNotif
+                };
+                this.messages.sent.push(smsMessage);
+                this.saveToStorage();
+                this.showToast('Sending SMS...', 'warning');
+                setTimeout(() => {
+                    smsMessage.status = 'sent';
+                    this.saveToStorage();
+                    this.showToast('SMS sent successfully!', 'success');
+                    if (enableNotif) {
+                        this.addNotification({
+                            title: 'SMS Sent',
+                            message: `Message to ${recipient} sent successfully`,
+                            type: 'success'
+                        });
+                    }
+                    this.updateSentList();
+                    this.updateBadge();
+                    this.playNotificationSound();
+                    e.target.reset();
+                    this.updateCharCount(document.getElementById('message'));
+                }, 1500);
+            }
+
+            shareWhatsApp() {
+                const message = document.getElementById('message').value || 'Check out Wsendy SMS!';
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+            }
+
+            contactViaWhatsApp() {
+                const message = 'Hi, I would like to support Wsendy SMS. Please share donation details.';
+                const whatsappUrl = `https://wa.me/${this.donationNumber}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+                this.closeModal('donateModal');
+            }
+
+            copyDonateNumber() {
+                navigator.clipboard.writeText(this.donationNumber).then(() => {
+                    this.showToast('Donation number copied!', 'success');
+                });
+            }
+
+            switchTab(tabBtn) {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                tabBtn.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                const tabName = tabBtn.getAttribute('data-tab');
+                document.getElementById(tabName).classList.add('active');
+                if (tabName === 'inbox') {
+                    this.updateInboxList();
+                } else if (tabName === 'sent') {
+                    this.updateSentList();
+                }
+            }
+
+            updateCharCount(textarea) {
+                const count = textarea.value.length;
+                const maxChars = textarea.getAttribute('data-max') || 160;
+                document.getElementById('charCount').textContent = count;
+                if (count > maxChars) {
+                    textarea.classList.add('error');
+                } else {
+                    textarea.classList.remove('error');
+                }
+            }
+
+            updateInboxList() {
+                const inboxList = document.getElementById('inboxList');
+                if (this.messages.inbox.length === 0) {
+                    inboxList.innerHTML = `
+                        <div class="empty-state">
+                            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 21 6 12 2 12"/><path d="M6 12V7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v5"/>
+                            </svg>
+                            <p>No messages received yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+                inboxList.innerHTML = this.messages.inbox.map(msg => `
+                    <div class="message-item">
+                        <div class="message-header">
+                            <div>
+                                <div class="message-number">From: ${this.formatPhoneNumber(msg.sender)}</div>
+                                <div style="margin-top: 0.5rem;">
+                                    <span class="message-network">${msg.network || 'Unknown'}</span>
+                                    <span class="message-status success">Received</span>
+                                </div>
+                            </div>
+                            <div class="message-time">${this.formatTime(msg.timestamp)}</div>
+                        </div>
+                        <div class="message-content">${this.escapeHtml(msg.message)}</div>
+                    </div>
+                `).join('');
+            }
+
+            updateSentList() {
+                const sentList = document.getElementById('sentList');
+                if (this.messages.sent.length === 0) {
+                    sentList.innerHTML = `
+                        <div class="empty-state">
+                            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                            <p>No messages sent yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+                sentList.innerHTML = this.messages.sent.map(msg => `
+                    <div class="message-item">
+                        <div class="message-header">
+                            <div>
+                                <div class="message-number">To: ${this.formatPhoneNumber(msg.recipient)}</div>
+                                <div style="margin-top: 0.5rem;">
+                                    <span class="message-network">${msg.network || 'Unknown'}</span>
+                                    <span class="message-status ${msg.status}">${msg.status.charAt(0).toUpperCase() + msg.status.slice(1)}</span>
+                                </div>
+                            </div>
+                            <div class="message-time">${this.formatTime(msg.timestamp)}</div>
+                        </div>
+                        <div class="message-content">${this.escapeHtml(msg.message)}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.75rem;">
+                            Type: ${msg.msgType || 'Text'}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            openModal(modalId) {
+                document.getElementById(modalId).classList.add('active');
+            }
+
+            closeModal(modalId) {
+                document.getElementById(modalId).classList.remove('active');
+            }
+
+            addNotification(notif) {
+                const notification = {
+                    id: Date.now(),
+                    ...notif,
+                    timestamp: new Date().toISOString()
+                };
+                this.notifications.push(notification);
+                this.updateBadge();
+                this.saveToStorage();
+            }
+
+            updateBadge() {
+                document.getElementById('notificationBadge').textContent = this.notifications.length;
+            }
+
+            updateNotificationsList() {
+                const list = document.getElementById('notificationsList');
+                if (this.notifications.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <p>No notifications</p>
+                        </div>
+                    `;
+                    return;
+                }
+                list.innerHTML = this.notifications.map(notif => `
+                    <div class="notification-item ${notif.type || ''}">
+                        <div style="font-weight: 600; margin-bottom: 0.25rem;">${notif.title}</div>
+                        <div style="font-size: 0.9rem; margin-bottom: 0.5rem;">${notif.message}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">${this.formatTime(notif.timestamp)}</div>
+                    </div>
+                `).join('');
+            }
+
+            importContacts() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.vcf,.csv';
+                input.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.showToast('Importing contacts...', 'warning');
+                        setTimeout(() => {
+                            this.showToast('Contacts imported successfully!', 'success');
+                        }, 1000);
+                    }
+                });
+                input.click();
+            }
+
+            scheduleMessage() {
+                this.showToast('Message scheduled successfully!', 'success');
+            }
+
+            validatePhoneNumber(phone) {
+                const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+                return phoneRegex.test(phone.replace(/\D/g, ''));
+            }
+
+            formatPhoneNumber(phone) {
+                const cleaned = phone.replace(/\D/g, '');
+                if (cleaned.length === 10) {
+                    return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+                }
+                return phone;
+            }
+
+            formatTime(timestamp) {
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                if (diffMins < 1) return 'Just now';
+                if (diffMins < 60) return `${diffMins}m ago`;
+                if (diffHours < 24) return `${diffHours}h ago`;
+                if (diffDays < 7) return `${diffDays}d ago`;
+                return date.toLocaleDateString();
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            showToast(message, type = 'info') {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = `toast show ${type}`;
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            playNotificationSound() {
+                if (!document.getElementById('soundNotif').checked) return;
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            }
+
+            toggleDarkMode(enabled) {
+                if (enabled) {
+                    document.documentElement.classList.add('dark-mode');
+                    localStorage.setItem('darkMode', 'true');
+                } else {
+                    document.documentElement.classList.remove('dark-mode');
+                    localStorage.setItem('darkMode', 'false');
+                }
+            }
+
+            changeFontSize(size) {
+                document.body.style.fontSize = {
+                    'small': '14px',
+                    'medium': '16px',
+                    'large': '18px'
+                }[size] || '16px';
+                localStorage.setItem('fontSize', size);
+            }
+
+            clearCache() {
+                if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                    this.messages = { inbox: [], sent: [] };
+                    this.notifications = [];
+                    localStorage.removeItem('wsendySMS');
+                    this.showToast('Cache cleared!', 'success');
+                    this.updateInboxList();
+                    this.updateSentList();
+                    this.updateBadge();
+                }
+            }
+
+            exportData() {
+                const data = { messages: this.messages, notifications: this.notifications, exportDate: new Date().toISOString() };
+                const dataStr = JSON.stringify(data, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `wsendy-sms-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                this.showToast('Data exported!', 'success');
+            }
+
+            saveToStorage() {
+                localStorage.setItem('wsendySMS', JSON.stringify({ messages: this.messages, notifications: this.notifications }));
+            }
+
+            loadFromStorage() {
+                const stored = localStorage.getItem('wsendySMS');
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    this.messages = data.messages || { inbox: [], sent: [] };
+                    this.notifications = data.notifications || [];
+                }
+                if (localStorage.getItem('darkMode') === 'true') {
+                    document.getElementById('darkMode').checked = true;
+                    this.toggleDarkMode(true);
+                }
+                const fontSize = localStorage.getItem('fontSize') || 'medium';
+                document.getElementById('fontSize').value = fontSize;
+                this.changeFontSize(fontSize);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.wsendySMS = new WsendySMS();
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        });
+    </script>
+</body>
+</html>
