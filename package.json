@@ -2,20 +2,20 @@
   "name": "pwa-starter",
   "version": "0.0.1",
   "description": "A starter kit for building PWAs!",
+  "homepage": "https://albert199900.github.io/wsendy-sms/",
   "main": "index.js",
   "scripts": {
     "dev-server": "vite --open",
     "dev": "npm run dev-server",
     "dev-task": "vite",
-    "deploy": "npx @azure/static-web-apps-cli login --no-use-keychain && npx @azure/static-web-apps-cli deploy",
     "build": "tsc && vite build",
-    "start": "npm run dev",
-    "start-remote": "vite --host"
+    "preview": "vite preview",
+    "start": "npm run dev"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@shoelace-style/shoelace": "^2.18.0",
+    "@shoelace-style/shoelace": "^2.16.0",
     "@thepassle/app-tools": "^0.9.12",
     "lit": "^3.2.1",
     "urlpattern-polyfill": "^10.0.0",
