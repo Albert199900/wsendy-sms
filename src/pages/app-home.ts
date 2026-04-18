@@ -6,35 +6,36 @@ export class AppHome extends LitElement {
   static styles = css`
     :host {
       display: block;
-      --primary-color: #2196F3;
-      --light-bg: #F5F5F5;
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      min-height: 100vh;
     }
     .header {
       background: #2196F3;
       color: white;
-      padding: 1rem;
+      padding: 20px;
       text-align: center;
-      font-weight: bold;
       font-size: 1.5rem;
+      font-weight: bold;
     }
     .container {
       padding: 20px;
-      max-width: 500px;
+      max-width: 400px;
       margin: 0 auto;
     }
     .sms-card {
       background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .input-group {
       margin-bottom: 15px;
     }
     label {
       display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
+      margin-bottom: 8px;
+      font-weight: bold;
     }
     input, textarea {
       width: 100%;
