@@ -1,136 +1,80 @@
-import { LitElement, css, html } from 'lit';
-import { property, customElement } from 'lit/decorators.js';
-import { resolveRouterPath } from '../router';
-
-import '@shoelace-style/shoelace/dist/components/card/card.js';
-import '@shoelace-style/shoelace/dist/components/button/button.js';
-
-import { styles } from '../styles/shared-styles';
+import { LitElement, html, css } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
-
-  // For more information on using properties and state in lit
-  // check out this link https://lit.dev/docs/components/properties/
-  @property() message = 'Welcome!';
-
-  static styles = [
-    styles,
-    css`
-    #welcomeBar {
+  static styles = css`
+    /* CSS YAKO NIMEIWEKA HAPA */
+    :host {
+      display: block;
+      padding: 10px;
+      font-family: sans-serif;
+    }
+    .header {
+      background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .sms-form {
       display: flex;
-      justify-content: center;
-      align-items: center;
       flex-direction: column;
+      gap: 1.5rem;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-
-    #welcomeCard,
-    #infoCard {
-      padding: 18px;
-      padding-top: 0px;
+    .form-input, textarea {
+      padding: 0.75rem;
+      border: 1px solid #E0E0E0;
+      border-radius: 8px;
+      width: 100%;
     }
-
-    sl-card::part(footer) {
-      display: flex;
-      justify-content: flex-end;
+    .btn-primary {
+      background: #2196F3;
+      color: white;
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
     }
-
-    @media(min-width: 750px) {
-      sl-card {
-        width: 70vw;
-      }
-    }
-
-
-    @media (horizontal-viewport-segments: 2) {
-      #welcomeBar {
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: space-between;
-      }
-
-      #welcomeCard {
-        margin-right: 64px;
-      }
-    }
-  `];
-
-  async firstUpdated() {
-    // this method is a lifecycle even in lit
-    // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-    console.log('This is your home page');
-  }
-
-  share() {
-    if ((navigator as any).share) {
-      (navigator as any).share({
-        title: 'PWABuilder pwa-starter',
-        text: 'Check out the PWABuilder pwa-starter!',
-        url: 'https://github.com/pwa-builder/pwa-starter',
-      });
-    }
-  }
+    /* ... Unaweza kuongeza CSS yako yote hapa ... */
+  `;
 
   render() {
     return html`
-      <app-header></app-header>
+      <div class="header">
+        <div class="header-content">
+          <div class="logo-text">Wsendy SMS</div>
+        </div>
+      </div>
 
-      <main>
-        <div id="welcomeBar">
-          <sl-card id="welcomeCard">
-            <div slot="header">
-              <h2>${this.message}</h2>
+      <main class="main-content">
+        <div class="container">
+          <form class="sms-form">
+            <div class="form-group">
+              <label>Namba ya Simu</label>
+              <input type="tel" class="form-input" placeholder="07XXXXXXXX">
+            </div>
+            
+            <div class="form-group">
+              <label>Ujumbe</label>
+              <textarea placeholder="Andika ujumbe wako hapa..."></textarea>
             </div>
 
-            <p>
-              For more information on the PWABuilder pwa-starter, check out the
-              <a href="https://docs.pwabuilder.com/#/starter/quick-start">
-                documentation</a>.
-            </p>
-
-            <p id="mainInfo">
-              Welcome to the
-              <a href="https://pwabuilder.com">PWABuilder</a>
-              pwa-starter! Be sure to head back to
-              <a href="https://pwabuilder.com">PWABuilder</a>
-              when you are ready to ship this PWA to the Microsoft Store, Google Play
-              and the Apple App Store!
-            </p>
-
-            ${'share' in navigator
-              ? html`<sl-button slot="footer" variant="default" @click="${this.share}">
-                        <sl-icon slot="prefix" name="share"></sl-icon>
-                        Share this Starter!
-                      </sl-button>`
-              : null}
-          </sl-card>
-
-          <sl-card id="infoCard">
-            <h2>Technology Used</h2>
-
-            <ul>
-              <li>
-                <a href="https://www.typescriptlang.org/">TypeScript</a>
-              </li>
-
-              <li>
-                <a href="https://lit.dev">lit</a>
-              </li>
-
-              <li>
-                <a href="https://shoelace.style/">Shoelace</a>
-              </li>
-
-              <li>
-                <a href="https://github.com/thepassle/app-tools/blob/master/router/README.md"
-                  >App Tools Router</a>
-              </li>
-            </ul>
-          </sl-card>
-
-          <sl-button href="${resolveRouterPath('about')}" variant="primary">Navigate to About</sl-button>
+            <button type="button" class="btn-primary" @click=${this._sendMessage}>
+              Tuma SMS
+            </button>
+          </form>
         </div>
       </main>
     `;
+  }
+
+  _sendMessage() {
+    alert("SMS inatuma... (Hapa utaweka logic yako ya kutuma)");
   }
 }
